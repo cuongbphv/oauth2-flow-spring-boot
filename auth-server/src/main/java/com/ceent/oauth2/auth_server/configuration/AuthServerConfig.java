@@ -66,7 +66,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     }
 
     @Override
-    public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+    public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
         oauthServer
                 .tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()")
@@ -86,24 +86,21 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
         }
 
         //Some custom enhancer
-        enhancers.add(new TokenEnhancer() {
-            @Override
-            public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
-                final Authentication userAuthentication = authentication.getUserAuthentication();
+        enhancers.add((accessToken, authentication) -> {
+            final Authentication userAuthentication = authentication.getUserAuthentication();
 
-                final DefaultOAuth2AccessToken defaultOAuth2AccessToken = (DefaultOAuth2AccessToken) accessToken;
-                Set<String> existingScopes = new HashSet<>(defaultOAuth2AccessToken.getScope());
-                if (userAuthentication != null) {
-                    //User has logged into system
-                    existingScopes.add("read-foo");
-                } else {
-                    //service is trying to access system
-                    existingScopes.add("another-scope");
-                }
-
-                defaultOAuth2AccessToken.setScope(existingScopes);
-                return defaultOAuth2AccessToken;
+            final DefaultOAuth2AccessToken defaultOAuth2AccessToken = (DefaultOAuth2AccessToken) accessToken;
+            Set<String> existingScopes = new HashSet<>(defaultOAuth2AccessToken.getScope());
+            if (userAuthentication != null) {
+                //User has logged into system
+                existingScopes.add("read-foo");
+            } else {
+                //service is trying to access system
+                existingScopes.add("another-scope");
             }
+
+            defaultOAuth2AccessToken.setScope(existingScopes);
+            return defaultOAuth2AccessToken;
         });
 
         TokenEnhancerChain enhancerChain = new TokenEnhancerChain();

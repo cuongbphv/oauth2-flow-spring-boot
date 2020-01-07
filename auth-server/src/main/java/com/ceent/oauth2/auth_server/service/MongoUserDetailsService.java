@@ -1,4 +1,4 @@
-package com.ceent.oauth2.auth_server.repository;
+package com.ceent.oauth2.auth_server.service;
 
 import com.ceent.oauth2.auth_server.entity.MongoUser;
 import org.springframework.beans.factory.annotation.Autowired;

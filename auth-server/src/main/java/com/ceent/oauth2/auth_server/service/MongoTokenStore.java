@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -179,12 +180,8 @@ public class MongoTokenStore implements TokenStore {
                 throw new IllegalStateException("MD5 algorithm not available.  Fatal (should be in the JDK).");
             }
 
-            try {
-                byte[] e = digest.digest(value.getBytes("UTF-8"));
-                return String.format("%032x", new Object[]{new BigInteger(1, e)});
-            } catch (UnsupportedEncodingException var4) {
-                throw new IllegalStateException("UTF-8 encoding not available.  Fatal (should be in the JDK).");
-            }
+            byte[] e = digest.digest(value.getBytes(StandardCharsets.UTF_8));
+            return String.format("%032x", new BigInteger(1, e));
         }
     }
 }

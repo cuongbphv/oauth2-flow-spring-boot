@@ -24,7 +24,6 @@ public class MongoClientDetails implements ClientDetails {
     public static final String ADDITIONAL_INFORMATION = "additionalInformation";
 
     public MongoClientDetails() {
-
     }
 
     public MongoClientDetails(String clientId, Set<String> resourceIds, boolean secretRequired, String clientSecret,

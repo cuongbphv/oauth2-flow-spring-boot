@@ -1,6 +1,6 @@
 package com.ceent.oauth2.auth_server.configuration;
 
-import com.ceent.oauth2.auth_server.repository.MongoUserDetailsService;
+import com.ceent.oauth2.auth_server.service.MongoUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
