@@ -3,6 +3,7 @@ package com.ceent.oauth2.auth_server.configuration;
 import com.ceent.oauth2.auth_server.service.MongoAuthorizationCodeServices;
 import com.ceent.oauth2.auth_server.service.MongoClientDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -37,13 +38,14 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    @Qualifier("basicTokenStore") // use mongo token store or jwt token store
     private TokenStore tokenStore;
 
     @Autowired(required = false)
     private JwtAccessTokenConverter accessTokenConverter;
 
     @Bean
-    public MongoClientDetailsService clientDetailsService() {
+    public MongoClientDetailsService customServiceClientDetail() {
         return new MongoClientDetailsService();
     }
 
@@ -54,7 +56,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.withClientDetails(clientDetailsService());
+        clients.withClientDetails(customServiceClientDetail());
     }
 
     @Override
@@ -88,7 +90,6 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
         //Some custom enhancer
         enhancers.add((accessToken, authentication) -> {
             final Authentication userAuthentication = authentication.getUserAuthentication();
-
             final DefaultOAuth2AccessToken defaultOAuth2AccessToken = (DefaultOAuth2AccessToken) accessToken;
             Set<String> existingScopes = new HashSet<>(defaultOAuth2AccessToken.getScope());
             if (userAuthentication != null) {
@@ -98,7 +99,6 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
                 //service is trying to access system
                 existingScopes.add("another-scope");
             }
-
             defaultOAuth2AccessToken.setScope(existingScopes);
             return defaultOAuth2AccessToken;
         });

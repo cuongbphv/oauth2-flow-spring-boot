@@ -11,26 +11,23 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 @Configuration
-public class OAuthTokenStoreConfig {
+public class AuthTokenStoreConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OAuthTokenStoreConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthTokenStoreConfig.class);
 
-    @Bean
-    @Profile("!jwttoken")
+    @Bean(name = "basicTokenStore")
     public TokenStore tokenStore() {
         LOGGER.info("Initializing with Mongo token store ...");
         return new MongoTokenStore();
     }
 
-    @Bean
-    @Profile("jwttoken")
+    @Bean(name = "jwtTokenStore")
     public TokenStore jwtTokenStore() {
         LOGGER.info("Initializing with JWT token store ...");
         return new JwtTokenStore(accessTokenConverter());
     }
 
     @Bean
-    @Profile("jwttoken")
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setSigningKey("123");
